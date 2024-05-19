@@ -5,6 +5,8 @@
 #include "search.h"
 #include "util.h"
 
+uint64_t nodes;
+
 constexpr std::array<int, N_COLS> column_order = []() {
     std::array<int, N_COLS> result {};
     int top = 0;
@@ -18,6 +20,8 @@ constexpr std::array<int, N_COLS> column_order = []() {
 }();
 
 Result search(Board& board, Depth depth, Result alpha, Result beta) {
+
+    nodes++;
 
     if (beta < DRAW) {
         beta--;

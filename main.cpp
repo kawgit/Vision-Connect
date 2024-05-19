@@ -4,6 +4,8 @@
 #include "hash.h"
 #include "search.h"
 #include "util.h"
+#include "timer.h"
+#include "bits.h"
 
 int main() {
 
@@ -12,14 +14,18 @@ int main() {
     std::cout << "Hi! Try and beat the bot at connect-4! Wait for the bot to move first, then the number associated with the column you wish to drop your stone in (numbered 0-6 from left to right)." << std::endl;
 
     Board board;
+    Timestamp start;
 
     while (!board.ply || board.check_result() == NONE) {
 
         reset_tt();
+        nodes = 0;
+        start = get_current_ms();
 
-        for (Depth depth = 1; depth < 17; depth++) {
-            std::cout << "*** Depth " << int(depth) << std::endl;
+        for (Depth depth = 1; depth < 15; depth++) {
+            std::cout << "*** Depth " << int(depth);
             search(board, depth, -INF, INF);
+            std::cout << " marginal nodes: " << nodes << " marginal nps: " << nodes / (get_time_diff(start) + 1) << "k" << std::endl; 
         }
 
         bool found;
@@ -29,6 +35,7 @@ int main() {
         Col move = entry->move;
         Result result = entry->result;
 
+        std::cout << "\n\n\n\n" << std::endl;
         std::cout << "The computer chooses to place a stone in column " << int(move) << std::endl;
         std::cout << "The computer expects to " << result_to_string(result) << std::endl;
 
@@ -50,6 +57,8 @@ int main() {
         print_board(board);
 
     }
+
+    std::cout << std::endl;
 
     if (board.check_result() == WIN) {
         if (board.stm != WHITE)

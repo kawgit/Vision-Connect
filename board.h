@@ -6,14 +6,12 @@
 
 struct Board {
 
-    Piece squares[N_ROWS][N_COLS];
+    Piece mailboxes[N_ROWS][N_COLS];
+    BB piece_bbs[N_SIDES];
     Row levels[N_COLS];
     Piece stm = WHITE;
     int ply = 0;
     Hash hash = 0;
-
-    Col last_col = 0;
-    Row last_row = 0;
 
     Board();
     void do_move(Col move_col);

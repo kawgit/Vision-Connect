@@ -16,4 +16,5 @@ add_executable(main
         main.cpp
         search.cpp
         util.cpp
+        timer.cpp
     )
