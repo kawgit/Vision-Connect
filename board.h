@@ -6,9 +6,10 @@
 
 struct Board {
 
-    Piece mailboxes[N_ROWS][N_COLS];
+    Piece pieces[N_ROWS][N_COLS];
     BB piece_bbs[N_SIDES];
     Row levels[N_COLS];
+    BB levels_bb;
     Piece stm = WHITE;
     int ply = 0;
     Hash hash = 0;

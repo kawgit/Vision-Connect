@@ -11,18 +11,18 @@ int main() {
 
     init_hashes();
 
-    std::cout << "Hi! Try and beat the bot at connect-4! Wait for the bot to move first, then the number associated with the column you wish to drop your stone in (numbered 0-6 from left to right)." << std::endl;
+    std::cout << "Hi! Try and beat the bot at connect-4! Wait for the bot to move first, then the number associated with the column you wish to drop your stone in (numbered 1-" + std::to_string(N_COLS) + " from left to right)." << std::endl;
 
     Board board;
     Timestamp start;
 
-    while (!board.ply || board.check_result() == NONE) {
+    while (!board.ply || (board.check_result() != WIN && board.check_result() != LOSS && board.check_result() != DRAW)) {
 
         reset_tt();
         nodes = 0;
         start = get_current_ms();
 
-        for (Depth depth = 1; depth < 15; depth++) {
+        for (Depth depth = 1; depth < 25; depth++) {
             std::cout << "*** Depth " << int(depth);
             search(board, depth, -INF, INF);
             std::cout << " marginal nodes: " << nodes << " marginal nps: " << nodes / (get_time_diff(start) + 1) << "k" << std::endl; 
@@ -43,14 +43,15 @@ int main() {
 
         print_board(board);
 
-        if (board.check_result() != NONE)
+        if (board.check_result() == WIN || board.check_result() == LOSS || board.check_result() == DRAW)
             break;
 
-        std::string movestr;
-        std::cin >> movestr;
-        move = std::stoi(movestr);
-
-        assert(move >= 0 && move < N_COLS && board.levels[move] != N_ROWS);
+        do {
+            std::cout << "Please enter a valid column number (1-" + std::to_string(N_COLS) + ")" << std::endl;
+            std::string movestr;
+            std::cin >> movestr;
+            move = std::stoi(movestr) - 1;
+        } while (!(move >= 0 && move < N_COLS && board.levels[move] != N_ROWS));
 
         board.do_move(move);
 
@@ -64,7 +65,7 @@ int main() {
         if (board.stm != WHITE)
             std::cout << "Haha you lose. Embarrasssiiiiiiiing." << std::endl;
         else
-            std::cout << "You must've cheated." << std::endl;
+            std::cout << "You win. You definitely cheated." << std::endl;
     }
     else
         std::cout << "Boring." << std::endl;
