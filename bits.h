@@ -97,3 +97,11 @@ constexpr BB bb_full = []() constexpr {
 			mask |= bb_of(square_of(row, col));
 	return mask;
 }();
+
+constexpr BB bb_four_of_four(const BB a, const BB b, const BB c, const BB d) {
+	return a & b & c & d;
+}
+
+constexpr BB bb_three_of_four(const BB a, const BB b, const BB c, const BB d) {
+	return (a & b & (c ^ d)) | (c & d & (a ^ b));
+}

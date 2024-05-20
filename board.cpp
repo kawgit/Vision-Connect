@@ -70,6 +70,9 @@ Result Board::check_result() {
     BB sjm_bb = piece_bbs[sjm];
     BB stm_bb = piece_bbs[stm];
 
+    constexpr BB shiftout_left  = bb_col(N_COLS - 1) | bb_col(N_COLS - 2) | bb_col(N_COLS - 3);
+    constexpr BB shiftout_right = bb_col(0) | bb_col(1) | bb_col(2);
+
     assert(sjm_bb & ~bb_full == 0);
     assert(stm_bb & ~bb_full == 0);
 
@@ -77,39 +80,48 @@ Result Board::check_result() {
     static_assert(N_CONNECT == 4);
 
     // check downward
-    if (sjm_bb
-        & sjm_bb >> 1 * N_COLS
-        & sjm_bb >> 2 * N_COLS
-        & sjm_bb >> 3 * N_COLS)
+    if (bb_four_of_four(sjm_bb, 
+                        sjm_bb >> 1 * N_COLS, 
+                        sjm_bb >> 2 * N_COLS, 
+                        sjm_bb >> 3 * N_COLS))
         return WIN;
     
     // check horizontally
-    if (sjm_bb
-        & sjm_bb >> 1
-        & sjm_bb >> 2
-        & sjm_bb >> 3
-        & ~(bb_col(N_COLS - 1) | bb_col(N_COLS - 2) | bb_col(N_COLS - 3)))
+    if (bb_four_of_four(sjm_bb, 
+                        sjm_bb >> 1, 
+                        sjm_bb >> 2, 
+                        sjm_bb >> 3)
+        & ~shiftout_left)
         return WIN;
 
     // check diagonally down+left/up+right
-    if (sjm_bb
-        & sjm_bb >> 1 * (N_COLS + 1)
-        & sjm_bb >> 2 * (N_COLS + 1)
-        & sjm_bb >> 3 * (N_COLS + 1)
-        & ~(bb_col(N_COLS - 1) | bb_col(N_COLS - 2) | bb_col(N_COLS - 3)))
+    if (bb_four_of_four(sjm_bb, 
+                        sjm_bb >> 1 * (N_COLS + 1), 
+                        sjm_bb >> 2 * (N_COLS + 1), 
+                        sjm_bb >> 3 * (N_COLS + 1))
+        & ~shiftout_left)
         return WIN;
 
     // check diagonally down+right/up+left
-    if (sjm_bb
-        & sjm_bb >> 1 * (N_COLS - 1)
-        & sjm_bb >> 2 * (N_COLS - 1)
-        & sjm_bb >> 3 * (N_COLS - 1)
-        & ~(bb_col(0) | bb_col(1) | bb_col(2)))
+    if (bb_four_of_four(sjm_bb, 
+                        sjm_bb >> 1 * (N_COLS - 1), 
+                        sjm_bb >> 2 * (N_COLS - 1), 
+                        sjm_bb >> 3 * (N_COLS - 1))
+        & ~shiftout_right)
         return WIN;
 
     // check for draw
     if (ply == N_SQUARES)
         return DRAW;
+
+    return NONE;
+
+
+
+
+
+
+
 
     // check downward
     if (stm_bb

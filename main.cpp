@@ -22,7 +22,7 @@ int main() {
         nodes = 0;
         start = get_current_ms();
 
-        for (Depth depth = 1; depth < 25; depth++) {
+        for (Depth depth = 1; depth <= 20; depth++) {
             std::cout << "*** Depth " << int(depth);
             search(board, depth, -INF, INF);
             std::cout << " marginal nodes: " << nodes << " marginal nps: " << nodes / (get_time_diff(start) + 1) << "k" << std::endl; 

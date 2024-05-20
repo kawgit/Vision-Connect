@@ -7,7 +7,7 @@
 
 uint64_t nodes;
 
-constexpr std::array<int, N_COLS> column_order = []() {
+constexpr std::array<int, N_COLS> default_column_order = []() {
     std::array<int, N_COLS> result {};
     int top = 0;
     int bot = -1;
@@ -33,12 +33,12 @@ Result search(Board& board, Depth depth, Result alpha, Result beta) {
     Entry* const entry = lookup(board.hash, found);
     if (found && entry->result != NONE && entry->depth >= depth) {
 
-        if (entry->bound == EXACT)
-            return entry->result;
-        else if (entry->bound == UB && entry->result < alpha)
-            return alpha;
-        else if (entry->bound == LB && entry->result > alpha) {
-            alpha = entry->result;
+        if (entry->bound == EXACT && entry->depth >= depth + 2)
+            alpha = entry->result - 2;
+        else if (entry->bound == UB && entry->result + 2 <= alpha)
+            return alpha; 
+        else if (entry->bound == LB && entry->result - 2 > alpha) {
+            alpha = entry->result - 2;
     
             if (alpha >= beta)
                 return beta;
@@ -54,12 +54,10 @@ Result search(Board& board, Depth depth, Result alpha, Result beta) {
 
     for (int i = 0; i < N_COLS; i++) {
 
-        Col move = column_order[i];
+        Col move = default_column_order[i];
 
         if (board.levels[move] == N_ROWS)
             continue;
-
-        Hash hash_before = board.hash;
 
         board.do_move(move);
         
@@ -68,8 +66,6 @@ Result search(Board& board, Depth depth, Result alpha, Result beta) {
             result = -search(board, depth - 1, -beta, -std::max(alpha, best_result));
         
         board.undo_move(move);
-
-        assert(board.hash == hash_before);
 
         if (result > DRAW + 1)
             result--;
