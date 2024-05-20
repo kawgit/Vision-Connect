@@ -12,7 +12,7 @@ uint64_t rand64() {
     uint64_t result = 0;
     for (int i = 0; i < 64 / 15 + 1; i++) {
         result <<= 15;
-        result |= rand();
+        result ^= rand();
     }
     return result;
 }
